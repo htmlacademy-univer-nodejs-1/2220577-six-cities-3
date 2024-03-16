@@ -1,0 +1,107 @@
+{
+  "api": {
+    "titles": [
+      "Баня",
+      "Огромный пентхаус олигарха",
+      "Скромная комнатка",
+      "Дом на набережной",
+      "Модерн дом"
+    ],
+    "descriptions": [
+      "Снимите роскошную баню на ночь, и попарьтесь!",
+      "Отдохните как короли",
+      "Открывается красивый вид на набережную и большой дом",
+      "Дом в стиле модерн, умный дом со всеми технологиями",
+      "Отличная комната для дешевого времяпропровождения"
+    ],
+    "dates": [
+      "2024-01-01T20:00:00Z",
+      "2024-02-01T20:00:00Z",
+      "2024-03-01T20:00:00Z",
+      "2024-04-01T20:00:00Z",
+      "2024-05-01T20:00:00Z"
+    ],
+    "cities": [
+      "Paris",
+      "Cologne",
+      "Brussels",
+      "Amsterdam",
+      "Hamburg",
+      "Dusseldorf"
+    ],
+    "offerPreviews": [
+      "offer1-preview.png",
+      "offer2-preview.png",
+      "offer3-preview.png",
+      "offer4-preview.png",
+      "offer5-preview.png"
+    ],
+    "offerImages": [
+      "photo1.png",
+      "photo2.png",
+      "photo3.png",
+      "photo4.png",
+      "photo5.png",
+      "photo6.png",
+      "photo7.png",
+      "photo8.png",
+      "photo9.png",
+      "photo10.png"
+    ],
+    "offerType": [
+      "apartment",
+      "house",
+      "room",
+      "hotel"
+    ],
+    "avatars": [
+      "user.jpg",
+      "avatar.jpg",
+      "cool-avatar.jpg",
+      "jason.jpg",
+      "tea.jpg"
+    ],
+    "conviniences": [
+      "Breakfast",
+      "Air conditioning",
+      "Laptop friendly workspace",
+      "Baby seat",
+      "Washer",
+      "Towels",
+      "Fridge"
+    ],
+    "users": [
+      "John",
+      "Jane",
+      "Bob",
+      "Alice",
+      "Даня"
+    ],
+    "emails": [
+      "email1@ya.ru",
+      "email2@ya.ru",
+      "email3@ya.ru",
+      "email4@ya.ru",
+      "email5@ya.ru"
+    ],
+    "usersType": [
+      "Default",
+      "Pro"
+    ],
+    "passwords": [
+      "password1",
+      "password2",
+      "password3",
+      "password4",
+      "password5"
+    ],
+    "latitudes": [
+      "48.85661;2.351499",
+      "50.937531;6.960279",
+      "50.846557;4.351697",
+      "52.370216;4.895168",
+      "53.550341;10.000654",
+      "51.225402;6.776314"
+    ]
+  }
+}
