@@ -19,7 +19,6 @@ export function createOffer(offerData: string): Offer {
     name,
     email,
     avatar,
-    password,
     userType,
     commentsCount,
     coordinates,
@@ -43,7 +42,6 @@ export function createOffer(offerData: string): Offer {
     creator: { name,
       email,
       avatar,
-      password,
       userType: userType as UserType },
     commentsCount: Number.parseInt(commentsCount, 10),
     coordinates: {
