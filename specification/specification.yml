@@ -1,0 +1,948 @@
+openapi: 3.1.0
+info:
+  title: API сервер для демо-проекта «Шесть городов».
+  description: |-
+    * Список ресурсов и маршрутов сервера «Шесть городов».
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 2.0.0
+tags:
+  - name: offers
+    description: Действия с объявлениями.
+  - name: comments
+    description: Действия с комментариями.
+  - name: users
+    description: Действия с пользователем.
+
+paths:
+  /offer/create:
+    post:
+      tags:
+        - offers
+      summary: Создает новый оффер
+      description: Создание нового оффера, от
+        авторизованного пользователя
+
+      parameters:
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+
+      requestBody:
+        description: "Отправка нового предложения"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/offerCreate'
+
+      responses:
+        "201":
+          description: Оффер сделан.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerCreate'
+        "400":
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /offer/edit/{id}:
+    put:
+      tags:
+        - offers
+      summary: Редактирование оффера
+      description: Изменение информации по офферу,
+        от автора оффера
+
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            description: Идентификатор оффера
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+
+      requestBody:
+        description: "Отправка нового предложения для редактирования"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/offerCreate'
+
+      responses:
+        "201":
+          description: Оффер изменен.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerCreate'
+        "400":
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "401":
+          description: Пользователь не авторизован
+        "403":
+          description: Пользователь не имеет доступа (изменение не своего оффера)
+        "404":
+          description: Оффер не найден
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /offer/remove/{id}:
+    delete:
+      tags:
+        - offers
+      summary: Удаление оффера
+      description: Удаляет оффер, из списка доступных юзеру,
+        комментарии также удаляются
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            description: Идентификатор оффера
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+
+      responses:
+        "204":
+          description: Оффер удален.
+        "400":
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "401":
+          description: Пользователь не авторизован
+        "403":
+          description: Пользователь не имеет доступа (удаление не своего оффера)
+        "404":
+          description: Оффер не найден
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /offers:
+    get:
+      tags:
+        - offers
+      summary: Список офферов
+      description: Возвращает список офферов. Default count = 60,
+        юзер может указать нужное количество в параметре запроса.
+        Возвращает отсорированный по дате список (по убыванию).
+      parameters:
+        - in: query
+          name: count
+          schema:
+            type: int
+            description: Идентификатор оффера
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /offers/{id}:
+    get:
+      tags:
+        - offers
+      summary: Детальная информация об оффере
+      description: Возвращает подробную информацию об оффере
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            description: Идентификатор оффера
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+        "404":
+          description: Оффер не найден
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /comments/{id}/:
+    get:
+      tags:
+        - comments
+      summary: Получить комменатрии для оффера
+      description: Получение комментариев, Default count = 50
+        или меньше, отсортированны по дате (по убыванию)
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            description: Идентификатор оффера
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/comment'
+        "404":
+          description: Оффер не найден
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    post:
+      tags:
+        - comments
+      summary: Добавление комментария к офферу
+      description: Добавление комментария, только авторизованный юзер
+        возвращает обьект комментария.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+            description: Идентификатор оффера
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+      requestBody:
+        description: Тело нового комментария
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/comment'
+
+      responses:
+        "201":
+          description: Комментарий создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+
+        "404":
+          description: Оффер не найден
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /users/register:
+    post:
+      tags:
+        - users
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя.
+      parameters:
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+
+      requestBody:
+        description: Информация для создания нового пользователя.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+
+      responses:
+        "201":
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "400":
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "403":
+          description: Регистрацию могут пройти только не авторизованные пользователи
+        "409":
+          description: Пользователь с таким email уже существует.
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /users/login:
+    post:
+      tags:
+        - users
+      summary: Авторизация пользователя
+      description: Авторизует пользователя на основе логина и пароля
+      parameters:
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+
+      requestBody:
+        description: Информация для входа в систему
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/loginUser'
+        required: true
+
+      responses:
+        "200":
+          description: Пользователь авторизован
+          content:
+            application/json:
+              name: token
+              description: Токен пользователя
+              schema:
+                type: string
+                example: "user_token"
+        "400":
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "401":
+          description: Пользователь не авторизован
+        "404":
+          description: Пользователь не найден
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Возвращает информацию по авторизованному пользователю
+      parameters:
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+
+      responses:
+        "200":
+          description: Сессия обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /users/logout:
+    delete:
+      tags:
+        - users
+      summary: Выход пользователя
+      description: Выход из закрытой части приложения.
+      parameters:
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+
+      responses:
+        "200":
+          description: Сессия завершена
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /offers/premium/:
+    get:
+      tags:
+        - offers
+      summary: Вовзращает премипальные предложения по городу
+      description: Вовзращает не больше 3 предложений, с флагом
+        "Premium"
+      parameters:
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+        - in: query
+          name: city
+          description: Город
+          schema:
+            type: string
+            enum: [Paris,Cologne,Brussels,Amsterdam,Hamburg,Dusseldorf]
+            example: Paris
+      responses:
+        "200":
+          description: Премиальные офферы
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+        "400":
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /users/favorites:
+    get:
+      tags:
+        - users
+      summary: Получить избранные офферы
+      description: Возвращает все предложения, добавленные
+        в избранные
+      parameters:
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+      responses:
+        "200":
+          description: Премиальные офферы
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+        "400":
+          description: Некорректные данные
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /users/favorites/{id}:
+    post:
+      tags:
+        - users
+      summary: Добавление и удаление предложения в/из избранного
+      description: Сервис предоставляет ресурс для добавления
+        и удаления любого предложения в/из списка избранных предложений.
+      parameters:
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+        - in: path
+          name: id
+          description: Идентификатор оффера
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Добавлено в избранное
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    delete:
+      tags:
+        - users
+      summary: Добавление и удаление предложения в/из избранного
+      description: Сервис предоставляет ресурс для добавления
+        и удаления любого предложения в/из списка избранных предложений.
+      parameters:
+        - in: header
+          name: token
+          description: Токен пользователя
+          schema:
+            type: string
+            example: "user_token"
+        - in: path
+          name: id
+          description: Идентификатор оффера
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Удалено из избранного
+        "401":
+          description: Пользователь не авторизован
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    createUser:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Rinat
+
+        email:
+          type: string
+          example: keks@htmlacademy.ru
+
+        avatar:
+          type: string
+          example: ava.jpg
+
+        password:
+          type: string
+          example: 123456asd
+
+        type:
+          type: string
+          enum: [Default, Pro]
+          example: Default
+
+      required: [name, email, password, type]
+
+    user:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 6329c3d6a04ab1061c6425ea
+
+        email:
+          type: string
+          example: keks@htmlacademy.ru
+
+        name:
+          type: string
+          example: Rinat
+
+        avatar:
+          type: string
+          example: Keks
+
+        type:
+          type: string
+          enum: [Default, Pro]
+          example: Default
+
+    loginUser:
+      type: object
+      properties:
+        login:
+          type: string
+          example: mail@ru
+
+        password:
+          type: string
+          example: 12312da
+
+    offer:
+      type: object
+      properties:
+        price:
+          type: number
+          example: 123
+
+        title:
+          type: string
+          example: The Banya
+
+        type:
+          type: string
+          enum: [apartment, house, room, hotel]
+          example: apartment
+
+        isFavorite:
+          type: boolean
+          example: true
+
+        date:
+          type: string
+          example: "2023-12-02"
+
+        city:
+          type: string
+          enum: [Paris,Cologne,Brussels,Amsterdam,Hamburg,Dusseldorf]
+          example: Paris
+
+        preview:
+          type: string
+          example: preview/img1.jpg
+
+        isPremium:
+          type: boolean
+          example: false
+
+        rating:
+          type: number
+          example: 5
+
+        commentsCount:
+          type: number
+          example: 45
+
+    offerCreate:
+      type: object
+      properties:
+        title:
+          type: string
+          example: The Banya
+
+        description:
+          type: string
+          example: Хорошое предложение
+
+        date:
+          type: string
+          example: "2023-12-02"
+
+        city:
+          type: string
+          enum: [Paris,Cologne,Brussels,Amsterdam,Hamburg,Dusseldorf]
+          example: Paris
+
+        preview:
+          type: string
+          example: preview/img1.jpg
+
+        photos:
+          type: array
+          items:
+            type: string
+
+        isPremium:
+          type: boolean
+          example: false
+
+        isFavorite:
+          type: boolean
+          example: true
+
+        rating:
+          type: number
+          example: 5
+
+        type:
+          type: string
+          enum: [apartment, house, room, hotel]
+          example: apartment
+
+        rooms:
+          type: number
+          example: 5
+
+        guests:
+          type: number
+          example: 5
+
+        price:
+          type: number
+          example: 123
+
+        conviniences:
+          type: array
+          items:
+            type: string
+            enum: [Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge]
+          example: [Breakfast, Air conditioning]
+
+        author:
+          type: string
+          example: Rinat
+
+        commentsCount:
+          type: number
+          example: 50
+
+        coordinates:
+          type: object
+          properties:
+            latitude:
+              type: float
+              example: 50.1235
+            longitude:
+              type: float
+              example: 49.5123
+
+    offerEdit:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 123asb25sd
+
+        title:
+          type: string
+          example: The Banya
+
+        description:
+          type: string
+          example: Хорошое предложение
+
+        date:
+          type: string
+          example: "2023-12-02"
+
+        city:
+          type: string
+          enum: [Paris,Cologne,Brussels,Amsterdam,Hamburg,Dusseldorf]
+          example: Paris
+
+        preview:
+          type: string
+          example: preview/img1.jpg
+
+        photos:
+          type: array
+          items:
+            type: string
+
+        isPremium:
+          type: boolean
+          example: false
+
+        isFavorite:
+          type: boolean
+          example: true
+
+        rating:
+          type: number
+          example: 5
+
+        type:
+          type: string
+          enum: [apartment, house, room, hotel]
+          example: apartment
+
+        rooms:
+          type: number
+          example: 5
+
+        guests:
+          type: number
+          example: 5
+
+        price:
+          type: number
+          example: 123
+
+        conviniences:
+          type: array
+          items:
+            type: string
+            enum: [Breakfast, Air conditioning, Laptop friendly workspace, Baby seat, Washer, Towels, Fridge]
+          example: [Breakfast, Air conditioning]
+
+        author:
+          type: string
+          example: Rinat
+
+        commentsCount:
+          type: number
+          example: 50
+
+        coordinates:
+          type: object
+          properties:
+            latitude:
+              type: float
+              example: 50.1235
+            longitude:
+              type: float
+              example: 49.5123
+
+    comment:
+      type: object
+      properties:
+        text:
+          type: string
+          example: mail@ru
+
+        date:
+          type: string
+          example: 12-12-1200
+
+        rating:
+          type: number
+          example: 5
+
+        author:
+          type: string
+          example: Rinat
+      required: [text, date, rating, author]
