@@ -16,7 +16,7 @@ tags:
     description: Действия с пользователем.
 
 paths:
-  /offer/create:
+  /offers:
     post:
       tags:
         - offers
@@ -66,9 +66,41 @@ paths:
                 properties:
                   error:
                     type: string
+    get:
+      tags:
+        - offers
+      summary: Список офферов
+      description: Возвращает список офферов. Default count = 60,
+        юзер может указать нужное количество в параметре запроса.
+        Возвращает отсорированный по дате список (по убыванию).
+      parameters:
+        - in: query
+          name: count
+          schema:
+            type: int
+            description: Идентификатор оффера
 
-  /offer/edit/{id}:
-    put:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/offer'
+        "500":
+          description: Внутренняя ошибка сервера
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /offers/{id}:
+    patch:
       tags:
         - offers
       summary: Редактирование оффера
@@ -127,8 +159,6 @@ paths:
                 properties:
                   error:
                     type: string
-
-  /offer/remove/{id}:
     delete:
       tags:
         - offers
@@ -176,42 +206,6 @@ paths:
                 properties:
                   error:
                     type: string
-
-  /offers:
-    get:
-      tags:
-        - offers
-      summary: Список офферов
-      description: Возвращает список офферов. Default count = 60,
-        юзер может указать нужное количество в параметре запроса.
-        Возвращает отсорированный по дате список (по убыванию).
-      parameters:
-        - in: query
-          name: count
-          schema:
-            type: int
-            description: Идентификатор оффера
-
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/offer'
-        "500":
-          description: Внутренняя ошибка сервера
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
-  /offers/{id}:
     get:
       tags:
         - offers
@@ -242,7 +236,7 @@ paths:
                   error:
                     type: string
 
-  /comments/{id}/:
+  /offers/{id}/comments:
     get:
       tags:
         - comments
@@ -322,7 +316,7 @@ paths:
                   error:
                     type: string
 
-  /users/register:
+  /register:
     post:
       tags:
         - users
@@ -374,7 +368,7 @@ paths:
                   error:
                     type: string
 
-  /users/login:
+  /login:
     post:
       tags:
         - users
@@ -461,7 +455,7 @@ paths:
                   error:
                     type: string
 
-  /users/logout:
+  /logout:
     delete:
       tags:
         - users
@@ -490,7 +484,7 @@ paths:
                   error:
                     type: string
 
-  /offers/premium/:
+  /premium:
     get:
       tags:
         - offers
@@ -539,7 +533,7 @@ paths:
                   error:
                     type: string
 
-  /users/favorites:
+  /favorites:
     get:
       tags:
         - users
@@ -583,7 +577,7 @@ paths:
                   error:
                     type: string
 
-  /users/favorites/{id}:
+  /favorites/{id}:
     post:
       tags:
         - users
