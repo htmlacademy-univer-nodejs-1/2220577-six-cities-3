@@ -1,6 +1,6 @@
 import { UserType } from '../../../types';
 
-export class CreateUserDTO {
+export class CreateUserDto {
   public email: string;
   public userType: UserType;
   public name: string;

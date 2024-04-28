@@ -23,7 +23,7 @@ export class DefaultOfferService implements OfferService {
   public async findById(id: string): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
       .findById(id)
-      .populate('creatorId')
+      .populate('userId')
       .exec();
   }
 
@@ -31,7 +31,7 @@ export class DefaultOfferService implements OfferService {
     const limit = count ?? DEFAULT_OFFER_COUNT;
     return this.offerModel
       .find({limit})
-      .populate('creatorId')
+      .populate('userId')
       .exec();
   }
 
@@ -44,7 +44,7 @@ export class DefaultOfferService implements OfferService {
   public async updateById(id: string, dto: CreateOfferDto): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
       .findByIdAndUpdate(id, dto, {new: true})
-      .populate('creatorId')
+      .populate('userId')
       .exec();
   }
 
@@ -55,19 +55,19 @@ export class DefaultOfferService implements OfferService {
       }}).exec();
   }
 
-  public async findPremiumByCity(city: string, isPremium: boolean, count?: number): Promise<DocumentType<OfferEntity>[] | null> {
+  public async findPremiumByCity(city: string, count?: number): Promise<DocumentType<OfferEntity>[] | null> {
     const limit = count ?? PREMIUM_OFFER_COUNT;
     return this.offerModel
-      .find({city: city, isPremium: isPremium}, {}, {limit})
-      .populate('creatorId')
+      .find({city: city, isPremium: true}, {}, {limit})
+      .populate('userId')
       .exec();
   }
 
-  public async findFavorite(isFavorite: boolean, count?: number): Promise<DocumentType<OfferEntity>[] | null> {
+  public async findFavorite(count?: number): Promise<DocumentType<OfferEntity>[] | null> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
     return this.offerModel
-      .find({isFavorite: isFavorite}, {}, {limit})
-      .populate('creatorId')
+      .find({isFavorite: true}, {}, {limit})
+      .populate('userId')
       .exec();
   }
 
@@ -88,11 +88,24 @@ export class DefaultOfferService implements OfferService {
       .exists({_id: id})) !== null;
   }
 
-  // не сделал, нужна помощь
-  public async calcRating(id: string): Promise<DocumentType<OfferEntity> | null> {
+  public async calcRating(id: string): Promise<DocumentType<OfferEntity | null> | null> {
+    const rating = await this.offerModel
+      .aggregate([
+        {
+          $lookup: {
+            from: 'comments',
+            pipeline: [
+              {$match: {offerId: id}}, {$project: {rating: 1}},
+              {$group: {_id: null, avg: {'$avg': '$rating'}}}
+            ], as: 'avg'
+          },
+        },
+      ]).exec();
+
     return this.offerModel
-      .findById(id)
-      .populate('creatorId')
+      .findByIdAndUpdate(id, {rating: rating[0]}, {new: true})
+      .populate('userId')
       .exec();
   }
+
 }
