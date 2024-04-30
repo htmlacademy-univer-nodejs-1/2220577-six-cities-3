@@ -1,7 +1,8 @@
 import { Coordinates } from '../../../types/coords.type.js';
 import { City, OfferType, Conveniences, User } from '../../../types/index.js';
 
-export class CreateOfferDto {
+export class UpdateOfferDto {
+  public id: string;
   public title: string;
   public description: string;
   public date: Date;
