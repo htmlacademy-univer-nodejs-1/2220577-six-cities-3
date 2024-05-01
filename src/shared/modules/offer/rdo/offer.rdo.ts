@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { City, Conveniences, OfferType, User, UserType } from '../../../types';
 import { Coordinates } from '../../../types/coords.type';
 import { CreateUserRdo } from '../../user/rdo/create-user.rdo';
@@ -47,7 +47,8 @@ export class OfferRdo {
   public conveniences: Conveniences[];
 
   @Expose({ name: 'userId'})
-  public user: User;
+  @Type(() => CreateUserRdo)
+  public userId: CreateUserRdo;
 
   @Expose()
   public commentsCount: number;

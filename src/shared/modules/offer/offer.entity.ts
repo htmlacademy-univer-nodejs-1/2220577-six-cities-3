@@ -14,22 +14,23 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ trim: true, required: true })
   public title!: string;
 
-  @prop({trim: true})
+  @prop({trim: true, required: true})
   public description!: string;
 
-  @prop()
+  @prop({ required: true })
   public date!: Date;
 
   @prop({
     type: () => String,
-    enum: City
+    enum: City,
+    required: true
   })
   public city!: City;
 
-  @prop()
+  @prop({required: true})
   public preview!: string;
 
-  @prop({ type: () => [String] })
+  @prop({ type: () => [String], required: true })
   public photos!: string[];
 
   @prop({ required: true })
@@ -38,37 +39,38 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({ required: true })
   public favorite!: boolean;
 
-  @prop({default: 0})
+  @prop({default: 0, required: true})
   public rating!: number;
 
   @prop({
     type: () => String,
-    enum: OfferType
+    enum: OfferType,
+    required: true
   })
   public offerType!: OfferType;
 
-  @prop()
+  @prop({required: true})
   public rooms!: number;
 
-  @prop()
+  @prop({required: true})
   public guests!: number;
 
-  @prop()
+  @prop({required: true})
   public price!: number;
 
-  @prop({ type: () => [String], enum: Conveniences })
+  @prop({ type: () => [String], enum: Conveniences,required: true })
   public conveniences!: Conveniences[];
 
   @prop({
     ref: UserEntity,
-    required: true
+    required: true,
   })
   public userId!: Ref<UserEntity>;
 
-  @prop({ default: 0 })
+  @prop()
   public commentsCount!: number;
 
-  @prop()
+  @prop({required: true})
   public coordinates!: Coordinates;
 }
 

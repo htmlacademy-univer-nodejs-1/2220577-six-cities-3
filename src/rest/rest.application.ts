@@ -42,7 +42,7 @@ export class RestApplication {
   private async _initControllers() {
     this.server.use('/users', this.userController.router);
     this.server.use('/offers', this.offerController.router);
-    this.server.use('/comments', this.commentController.router);
+    this.server.use('/', this.commentController.router);
   }
 
   private async _initMiddleware() {

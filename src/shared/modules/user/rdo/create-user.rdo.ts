@@ -15,5 +15,5 @@ export class CreateUserRdo {
   public password: string;
 
   @Expose()
-  public type: UserType;
+  public userType: UserType;
 }

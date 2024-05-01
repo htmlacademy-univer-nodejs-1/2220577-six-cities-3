@@ -5,7 +5,7 @@ import { Component } from '../../types/index.js';
 import { CommentEntity, CommentModel } from './comment.entity.js';
 import { DefaultCommentService } from './default-comment.service.js';
 import { Controller } from '../../libs/rest/index.js';
-import { CommentController } from './index.js';
+import {CommentController} from './index.js';
 
 export function createCommentContainer() {
   const commentContainer = new Container();
