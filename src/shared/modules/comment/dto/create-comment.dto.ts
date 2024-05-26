@@ -1,5 +1,5 @@
 import { IsMongoId, IsNumber, IsString, Length, Max, Min } from 'class-validator';
-import { CreateCommentMessages } from './create-comment.messages';
+import { CreateCommentMessages } from './create-comment.messages.js';
 
 export class CreateCommentDto {
   @IsString({ message: CreateCommentMessages.text.invalidFormat })
@@ -11,6 +11,8 @@ export class CreateCommentDto {
   @Max(5, {message: CreateCommentMessages.rating.max})
   public rating: number;
 
-  @IsMongoId({ message: CreateCommentMessages.userId.invalidFormat })
+  @IsMongoId({ message: CreateCommentMessages.offerId.invalidFormat })
+  public offerId: string;
+
   public userId: string;
 }

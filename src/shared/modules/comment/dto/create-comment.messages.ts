@@ -10,4 +10,7 @@ export const CreateCommentMessages = {
   userId: {
     invalidFormat: 'userId field must be a valid id'
   },
+  offerId:{
+    invalidFormat: 'offerId field must be a valid id'
+  }
 } as const;

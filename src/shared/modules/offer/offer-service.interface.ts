@@ -14,6 +14,6 @@ export interface OfferService extends DocumentExists {
   findFavorite(): Promise<DocumentType<OfferEntity>[] | null>;
   addToFavorite(id: string): Promise<DocumentType<OfferEntity> | null>;
   removeFromFavorite(id: string): Promise<DocumentType<OfferEntity> | null>;
-  calcRating(id: string): Promise<DocumentType<OfferEntity> | null>;
+  calcRating(id: string): Promise<DocumentType<OfferEntity | null> | null>;
   exists(id: string): Promise<boolean>;
 }

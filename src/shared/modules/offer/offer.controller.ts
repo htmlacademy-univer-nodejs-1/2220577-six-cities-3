@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { Request, Response } from 'express';
-import { BaseController, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, DocumentExistsMiddleware } from '../../libs/rest/index.js';
+import { BaseController, HttpMethod, ValidateDtoMiddleware, ValidateObjectIdMiddleware, DocumentExistsMiddleware, PrivateRouteMiddleware } from '../../libs/rest/index.js';
 import { Logger } from '../../libs/logger/index.js';
 import { City, Component } from '../../types/index.js';
 import { OfferService } from './offer-service.interface.js';
@@ -18,41 +18,47 @@ export class OfferController extends BaseController {
   ) {
     super(logger);
 
-    this.logger.info('Register routes for OfferController…');
+    this.logger.info('Register routes for OfferController...');
 
-    // GET /offers
-    this.addRoute({ path: '/', method: HttpMethod.Get, handler: this.index });
-    // POST /offers
-    this.addRoute({ path: '/', method: HttpMethod.Post,
+    this.addRoute({ path: '/offers', method: HttpMethod.Get, handler: this.index });
+    this.addRoute({ path: '/offers', method: HttpMethod.Post,
       handler: this.create,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateDtoMiddleware(CreateOfferDto),
       ] });
-    // PATCH /offers/{id}
-    this.addRoute({ path: '/:offerId', method: HttpMethod.Patch, handler: this.update,
+    this.addRoute({ path: '/offers/:offerId', method: HttpMethod.Patch, handler: this.update,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ] });
-    // DELETE /offers/{id}
-    this.addRoute({ path: '/:offerId', method: HttpMethod.Delete, handler: this.delete,
+    this.addRoute({ path: '/offers/:offerId', method: HttpMethod.Delete, handler: this.delete,
+      middlewares: [new ValidateObjectIdMiddleware('offerId'),
+        new PrivateRouteMiddleware(),
+        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
+      ] });
+    this.addRoute({ path: '/offers/:offerId', method: HttpMethod.Get, handler: this.show,
       middlewares: [new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
       ] });
-    // GET /offers/{id}
-    this.addRoute({ path: '/:offerId', method: HttpMethod.Get, handler: this.show,
-      middlewares: [new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'Offer', 'offerId'),
-      ] });
-    // GET /premium
     this.addRoute({ path: '/premium', method: HttpMethod.Get, handler: this.getPremium });
-    // GET /favorites
-    this.addRoute({ path: '/favorites', method: HttpMethod.Get, handler: this.getFavorites });
-    // POST /favorites/{id}
-    this.addRoute({ path: '/favorites/:offerId', method: HttpMethod.Post, handler: this.setFavorite, middlewares: [new ValidateObjectIdMiddleware('offerId')] });
-    // DELETE /favorites/{id}
-    this.addRoute({ path: '/favorites/:offerId', method: HttpMethod.Delete, handler: this.deleteFavorite, middlewares: [new ValidateObjectIdMiddleware('offerId')] });
+    this.addRoute({ path: '/favorites', method: HttpMethod.Get,
+      middlewares:[
+        new PrivateRouteMiddleware(),
+      ],
+      handler: this.getFavorites });
+    this.addRoute({ path: '/favorites/:offerId', method: HttpMethod.Post, handler: this.setFavorite,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId')
+      ] });
+    this.addRoute({ path: '/favorites/:offerId', method: HttpMethod.Delete, handler: this.deleteFavorite,
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateObjectIdMiddleware('offerId')
+      ] });
   }
 
   public async index(_req: Request, res: Response): Promise<void> {
@@ -86,7 +92,6 @@ export class OfferController extends BaseController {
   }
 
   public async getPremium({ query }: Request, res: Response): Promise<void> {
-    // ?city=London
     const { city } = query;
     const offers = await this.offerService.findPremiumByCity(city as City);
     const responseData = fillDTO(OfferRdo, offers);
