@@ -29,10 +29,11 @@ export class DefaultOfferService implements OfferService {
 
   public async find(count?: number): Promise<DocumentType<OfferEntity>[]> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
-    return this.offerModel
-      .find({limit})
+    const offers = this.offerModel
+      .find()
       .populate('userId')
       .exec();
+    return (await offers).slice(0, limit);
   }
 
   public async deleteById(id: string): Promise<DocumentType<OfferEntity> | null> {
@@ -57,29 +58,31 @@ export class DefaultOfferService implements OfferService {
 
   public async findPremiumByCity(city: string, count?: number): Promise<DocumentType<OfferEntity>[] | null> {
     const limit = count ?? PREMIUM_OFFER_COUNT;
-    return this.offerModel
-      .find({city: city, isPremium: true}, {}, {limit})
+    const offers = this.offerModel
+      .find({city: city, premium: true})
       .populate('userId')
       .exec();
+    return (await offers).slice(0, limit);
   }
 
   public async findFavorite(count?: number): Promise<DocumentType<OfferEntity>[] | null> {
     const limit = count ?? DEFAULT_OFFER_COUNT;
-    return this.offerModel
-      .find({isFavorite: true}, {}, {limit})
+    const offers = this.offerModel
+      .find({favorite: true})
       .populate('userId')
       .exec();
+    return (await offers).slice(0, limit);
   }
 
   public async addToFavorite(id: string): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
-      .findByIdAndUpdate(id, {isFavorite: false}, {new: true})
+      .findByIdAndUpdate(id, {favorite: true}, {new: true})
       .exec();
   }
 
   public async removeFromFavorite(id: string): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel
-      .findByIdAndUpdate(id, {isFavorite: true}, {new: false})
+      .findByIdAndUpdate(id, {favorite: false}, {new: true})
       .exec();
   }
 

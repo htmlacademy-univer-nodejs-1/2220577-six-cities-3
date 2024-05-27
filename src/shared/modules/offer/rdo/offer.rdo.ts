@@ -1,7 +1,9 @@
 import { Expose, Type } from 'class-transformer';
-import { City, Conveniences, OfferType, User, UserType } from '../../../types';
-import { Coordinates } from '../../../types/coords.type';
-import { CreateUserRdo } from '../../user/rdo/create-user.rdo';
+import { Coordinates } from '../../../types/coords.type.js';
+import { CreateUserRdo } from '../../user/rdo/create-user.rdo.js';
+import { City } from '../../../types/city-type.enum.js';
+import { OfferType } from '../../../types/offer-type.enum.js';
+import { Conveniences } from '../../../types/conv-type.enum.js';
 
 export class OfferRdo {
   @Expose()

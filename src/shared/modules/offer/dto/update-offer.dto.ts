@@ -1,6 +1,6 @@
 import { Coordinates } from '../../../types/coords.type.js';
-import { City, OfferType, Conveniences, User } from '../../../types/index.js';
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsDateString, IsDecimal, IsEnum, IsInt, IsLatLong, IsLongitude, IsMongoId, IsNotEmptyObject, IsNumber, IsOptional, Max, MaxLength, Min, MinLength, isMimeType, isNumber } from 'class-validator';
+import { City, OfferType, Conveniences } from '../../../types/index.js';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsDateString, IsEnum, IsMongoId, IsNotEmptyObject, IsNumber, IsOptional, Max, MaxLength, Min, MinLength } from 'class-validator';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
 
 export class UpdateOfferDto {

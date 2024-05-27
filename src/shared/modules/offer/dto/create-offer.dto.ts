@@ -1,6 +1,6 @@
 import { Coordinates } from '../../../types/coords.type.js';
-import { City, OfferType, Conveniences, User } from '../../../types/index.js';
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsDateString, IsDecimal, IsEnum, IsInt, IsLatLong, IsLongitude, IsMongoId, IsNotEmptyObject, IsNumber, Max, MaxLength, Min, MinLength, isMimeType, isNumber } from 'class-validator';
+import { City, OfferType, Conveniences } from '../../../types/index.js';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsBoolean, IsDateString, IsEnum, IsMongoId, IsNotEmptyObject, IsNumber, Max, MaxLength, Min, MinLength } from 'class-validator';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
 
 export class CreateOfferDto {
@@ -8,8 +8,8 @@ export class CreateOfferDto {
   @MaxLength(100, { message: CreateOfferValidationMessage.title.maxLength })
   public title: string;
 
-  @MinLength(20, { message: CreateOfferValidationMessage.title.minLength })
-  @MaxLength(1024, { message: CreateOfferValidationMessage.title.maxLength })
+  @MinLength(20, { message: CreateOfferValidationMessage.description.minLength })
+  @MaxLength(1024, { message: CreateOfferValidationMessage.description.maxLength })
   public description: string;
 
   @IsDateString({}, { message: CreateOfferValidationMessage.date.invalidFormat })
